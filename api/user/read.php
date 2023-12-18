@@ -5,55 +5,53 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-AllowHeaders, Authorization, X-Requested-With");
 include_once '../../config/database.php';
-include_once '../../models/barang.php';
+include_once '../../models/user.php';
 
 $database = new Database();
 $db = $database->getConnection();
 if(isset($_GET['id'])){
-    $item = new Barang($db);
+    $item = new User($db);
     $item->id = isset($_GET['id']) ? $_GET['id'] : die();
-    $item->getSingleBarang();
-    if($item->kd_barang != null){
+    $item->getSingleUser();
+    if($item->fullname != null){
         // create array
         $emp_arr = array(
         "id" => $item->id,
-        "kd_barang" => $item->kd_barang,
-        "nm_barang" => $item->nm_barang,
-        "stok" => $item->stok,
-        "hrg_barang" => $item->hrg_barang,
-        "jns_barang" => $item->jns_barang,
-        "hrg_beli" => $item->hrg_beli
+        "fullname" => $item->fullname,
+        "email" => $item->email,
+        "pw" => $item->pw,
+        "rolee" => $item->rolee,
+        "created" => $item->created,      
         );
         http_response_code(200);
         echo json_encode($emp_arr);
     }
     else{
         http_response_code(404);
-        echo json_encode("Barang not found.");
+        echo json_encode("User not found.");
     }
 }
 else {
-    $items = new Barang($db);
-    $stmt = $items->getBarangs();
+    $items = new User($db);
+    $stmt = $items->getUsers();
     $itemCount = $stmt->rowCount();
     if($itemCount > 0){
-        $BarangArr = array();
-        $BarangArr["body"] = array();
-        $BarangArr["itemCount"] = $itemCount;
+        $UserArr = array();
+        $UserArr["body"] = array();
+        $UserArr["itemCount"] = $itemCount;
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
             extract($row);
             $e = array(
                 "id" => $id,
-                "kd_barang" => $kd_barang,
-                "nm_barang" => $nm_barang,
-                "stok" => $stok,
-                "hrg_barang" => $hrg_barang,
-                "jns_barang" => $jns_barang,
-                "hrg_beli" => $hrg_beli
+                "fullname" => $fullname,
+                "email" => $email,
+                "pw" => $pw,
+                "rolee" => $rolee,
+                "created" => $created,
             );
-            array_push($BarangArr["body"], $e);
+            array_push($UserArr["body"], $e);
         }
-        echo json_encode($BarangArr);
+        echo json_encode($UserArr);
     }
     else{
         http_response_code(404);
